@@ -2,6 +2,8 @@ AllCops:
   TargetRubyVersion: 3.3
   NewCops: enable
   SuggestExtensions: false
+  Exclude:
+    - 'db/**/*'
 
 # Layout
 Layout/SpaceInsideStringInterpolation:
