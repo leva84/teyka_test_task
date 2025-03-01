@@ -19,6 +19,10 @@ group :development, :test do
   gem 'pry'
 end
 
+group :development do
+  gem 'rubocop', require: false
+end
+
 group :test do
   gem 'rspec'
   # Testing Sinatra requests
