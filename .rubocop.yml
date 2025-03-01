@@ -1,7 +1,11 @@
 AllCops:
-  TargetRubyVersion: 3.3.6
+  TargetRubyVersion: 3.3
   NewCops: enable
   SuggestExtensions: false
+
+# Layout
+Layout/SpaceInsideStringInterpolation:
+  Enabled: false
 
 # Style
 Style/Documentation:
