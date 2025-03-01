@@ -61,14 +61,14 @@ namespace :db do
 
     if adapter == 'sqlite'
       if File.exist?(db_path)
-        puts "Dropping database: #{db_path}..."
+        puts "Dropping database: #{ db_path }..."
         FileUtils.rm(db_path)
         puts 'Database dropped successfully.'
       else
-        puts "Database does not exist: #{db_path}"
+        puts "Database does not exist: #{ db_path }"
       end
     else
-      puts "Unsupported adapter: #{adapter}"
+      puts "Unsupported adapter: #{ adapter }"
     end
   end
 end
