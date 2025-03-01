@@ -4,6 +4,7 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - 'db/**/*'
+    - 'Rakefile'
 
 # Layout
 Layout/SpaceInsideStringInterpolation:
