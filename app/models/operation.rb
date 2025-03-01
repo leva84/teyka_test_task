@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Operation < Sequel::Model
   many_to_one :user # Связь many-to-one с таблицей users
 
