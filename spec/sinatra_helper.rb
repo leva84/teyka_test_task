@@ -16,8 +16,12 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
+    # Отключаем проверку FK перед truncation
+    Sequel::Model.db.run('PRAGMA foreign_keys = OFF')
     DatabaseCleaner[:sequel].strategy = :transaction
     DatabaseCleaner[:sequel].clean_with(:truncation)
+    # Включаем FK обратно
+    Sequel::Model.db.run('PRAGMA foreign_keys = ON')
   end
 
   config.around(:each) do |example|

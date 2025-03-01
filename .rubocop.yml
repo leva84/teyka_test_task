@@ -10,6 +10,13 @@ AllCops:
 Layout/SpaceInsideStringInterpolation:
   Enabled: false
 
+# Metrics
+Metrics/BlockLength:
+  Max: 35
+  Exclude:
+    - 'spec/controllers/**/*.rb'
+    - 'spec/models/**/*.rb'
+
 # Style
 Style/Documentation:
   Enabled: false
