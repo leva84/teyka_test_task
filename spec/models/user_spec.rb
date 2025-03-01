@@ -39,7 +39,7 @@ describe User do
       end
 
       context 'when non-numeric bonus' do
-        let(:user) {  User.new(name: 'Test User', template: template, bonus: 'wrong_value') }
+        let(:user) { User.new(name: 'Test User', template: template, bonus: 'wrong_value') }
 
         it 'is invalid' do
           expect(user.valid?).to be false

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Product do
   context 'validations' do
     context 'when valid product' do
