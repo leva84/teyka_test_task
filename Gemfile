@@ -18,3 +18,15 @@ group :development, :test do
   # Debugging
   gem 'pry'
 end
+
+group :development do
+  gem 'rubocop', require: false
+end
+
+group :test do
+  gem 'rspec'
+  # Testing Sinatra requests
+  gem 'rack-test'
+  # Cleaning DB
+  gem 'database_cleaner-sequel'
+end
