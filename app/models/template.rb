@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Template < Sequel::Model
+  plugin :validation_helpers
   one_to_many :users # Связь one-to-many с таблицей users
 
   # Валидации
