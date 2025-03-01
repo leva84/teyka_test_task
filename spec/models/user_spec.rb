@@ -24,31 +24,31 @@ describe User do
           expect(user.errors[:name]).to include('is not present')
         end
       end
-    end
 
-    context 'without template' do
-      let(:user) { User.new(name: 'Test User') }
+      context 'without template' do
+        let(:user) { User.new(name: 'Test User') }
 
-      it 'is invalid' do
-        expect(user.valid?).to be false
+        it 'is invalid' do
+          expect(user.valid?).to be false
+        end
+
+        it 'returns a message' do
+          user.valid?
+          expect(user.errors[:template_id]).to include('is not present')
+        end
       end
 
-      it 'returns a message' do
-        user.valid?
-        expect(user.errors[:template_id]).to include('is not present')
-      end
-    end
+      context 'when non-numeric bonus' do
+        let(:user) {  User.new(name: 'Test User', template: template, bonus: 'wrong_value') }
 
-    context 'when non-numeric bonus' do
-      let(:user) {  User.new(name: 'Test User', template: template, bonus: 'wrong_value') }
+        it 'is invalid' do
+          expect(user.valid?).to be false
+        end
 
-      it 'is invalid' do
-        expect(user.valid?).to be false
-      end
-
-      it 'returns a message' do
-        user.valid?
-        expect(user.errors[:bonus]).to include('is not a number')
+        it 'returns a message' do
+          user.valid?
+          expect(user.errors[:bonus]).to include('is not a number')
+        end
       end
     end
   end
