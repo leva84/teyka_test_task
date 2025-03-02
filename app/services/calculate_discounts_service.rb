@@ -79,7 +79,7 @@ class CalculateDiscountsService
       cashback = product.type == 'increased_cashback' ? base_cashback + product.value.to_f : base_cashback
       [discount, cashback]
     when 'gold'
-      discount = product.type == 'discount' ? base_discount + product.value.to_f : base_discount
+      discount = product.type == 'discount' ? base_discount + product.value.to_f : 0
       [discount, 0]
     else
       [0, 0]
