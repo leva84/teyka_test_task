@@ -16,6 +16,7 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/controllers/**/*.rb'
     - 'spec/models/**/*.rb'
+    - 'spec/commands/**/*.rb'
 
 # Style
 Style/Documentation:
