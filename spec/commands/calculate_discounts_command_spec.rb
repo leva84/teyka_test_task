@@ -19,8 +19,6 @@ describe CalculateDiscountsCommand do
       it 'calculates and saves the operation successfully' do
         command = described_class.call(user_id: user.id, positions: valid_positions)
 
-        # binding.pry
-
         expect(command).to be_ok
         expect(command.data_summary[:status]).to eq('success')
         expect(command.data_summary[:operation_id]).not_to be_nil
