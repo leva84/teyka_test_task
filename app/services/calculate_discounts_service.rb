@@ -5,53 +5,41 @@ class CalculateDiscountsService
     @user = User.with_pk!(user_id)
     @template = @user.template
     @positions = positions
+    @products = preload_products
   end
 
   def call
-    # Предзагружаем все продукты разом
-    product_ids = @positions.map { |position| position[:id] }.uniq
-    products = Product.where(id: product_ids).to_hash(:id)
+    positions_details = @positions.map do |position|
+      calculate_position(position)
+    end.compact
 
-    total_sum = 0
-    total_discount = 0
-    total_cashback = 0
-    allow_write_off = 0
-    positions_details = []
-
-    @positions.each do |position|
-      # Берем товар из предзагруженного хэш-мэппа
-      product = products[position[:id]]
-      next if product.nil? || product.type == 'noloyalty'
-
-      # Вычисляем скидки/кэшбек
-      result = process_position(product, position)
-
-      # Суммируем результаты
-      total_sum += result[:final_price]
-      total_discount += result[:discount_value]
-      total_cashback += result[:cashback_value]
-      allow_write_off += result[:allow_write_off]
-
-      positions_details << result # Добавляем данные о позиции
-    end
+    total_sum = positions_details.sum { |pos| pos[:final_price] }
+    total_discount = positions_details.sum { |pos| pos[:discount_value] }
+    total_cashback = positions_details.sum { |pos| pos[:cashback_value] }
+    allow_write_off = positions_details.sum { |pos| pos[:allow_write_off] }
 
     format_result(total_sum, total_discount, total_cashback, allow_write_off, positions_details)
   end
 
   private
 
-  def process_position(product, position)
-    price = position[:price].to_f
-    quantity = position[:quantity].to_i
-    total_price = price * quantity
+  # Предзагрузка всех товаров из базы
+  def preload_products
+    product_ids = @positions.map { |pos| pos[:id] }.uniq
+    Product.where(id: product_ids).to_hash(:id)
+  end
 
-    # Рассчитываем проценты скидок и кэшбека для товара
+  # Расчет данных для отдельной позиции
+  def calculate_position(position)
+    product = @products[position[:id]]
+    return if product.nil? || product.type == 'noloyalty'
+
+    total_price = position[:price].to_f * position[:quantity].to_i
     discount_percent, cashback_percent = calculate_modifiers(product)
 
-    # Рассчитываем абсолютные значения
     discount_value = total_price * (discount_percent / 100.0)
-    cashback_value = (total_price - discount_value) * (cashback_percent / 100.0)
     final_price = total_price - discount_value
+    cashback_value = final_price * (cashback_percent / 100.0)
 
     {
       product_id: product.id,
@@ -63,29 +51,38 @@ class CalculateDiscountsService
       cashback_value: cashback_value.round(2),
       discount_percent: discount_percent,
       cashback_percent: cashback_percent,
-      allow_write_off: final_price # Это значение доступно для списания
+      allow_write_off: final_price.round(2)
     }
   end
 
+  # Вычисление процента скидок и кэшбэка на базе шаблона пользователя
   def calculate_modifiers(product)
     base_discount = @template.discount
     base_cashback = @template.cashback
 
     case @template.name.downcase
     when 'bronze'
-      [0, base_cashback + (product.type == 'increased_cashback' ? product.value.to_f : 0)]
+      [0, calculate_cashback(product, base_cashback)]
     when 'silver'
-      discount = product.type == 'discount' ? base_discount + product.value.to_f : 0
-      cashback = product.type == 'increased_cashback' ? base_cashback + product.value.to_f : base_cashback
-      [discount, cashback]
+      [calculate_discount(product, base_discount), calculate_cashback(product, base_cashback)]
     when 'gold'
-      discount = product.type == 'discount' ? base_discount + product.value.to_f : 0
-      [discount, 0]
+      [calculate_discount(product, base_discount), 0]
     else
       [0, 0]
     end
   end
 
+  # Расчет скидки
+  def calculate_discount(product, base_discount)
+    product.type == 'discount' ? base_discount + product.value.to_f : 0
+  end
+
+  # Расчет кэшбэка
+  def calculate_cashback(product, base_cashback)
+    product.type == 'increased_cashback' ? base_cashback + product.value.to_f : base_cashback
+  end
+
+  # Форматирование результата
   def format_result(total_sum, total_discount, total_cashback, allow_write_off, positions_details)
     {
       user: {
@@ -97,13 +94,18 @@ class CalculateDiscountsService
       total_sum: total_sum.round(2),
       discounts: {
         total_value: total_discount.round(2),
-        total_percent: total_sum.positive? ? (total_discount / total_sum * 100).round(2) : 0
+        total_percent: calculate_percent(total_discount, total_sum)
       },
       cashback: {
         total_value: total_cashback.round(2),
-        total_percent: total_sum.positive? ? (total_cashback / total_sum * 100).round(2) : 0
+        total_percent: calculate_percent(total_cashback, total_sum)
       },
       allow_write_off: allow_write_off.round(2)
     }
+  end
+
+  # Общая логика для расчета процента
+  def calculate_percent(part, whole)
+    whole.positive? ? (part / whole * 100).round(2) : 0
   end
 end
