@@ -28,7 +28,7 @@ describe CalculateDiscountsService do
       total_price = 100 + (50 * 2)
 
       # Cashback: базовый кэшбек 5% на все + 7% для Product B
-      expected_cashback = (total_price * 0.05 + 50 * 2 * 0.07).round(2)
+      expected_cashback = ((total_price * 0.05) + (50 * 2 * 0.07)).round(2)
 
       expect(result[:total_sum]).to eq(total_price)
       expect(result[:cashback][:total_value]).to eq(expected_cashback)
