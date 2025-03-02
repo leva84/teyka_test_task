@@ -2,11 +2,15 @@
 
 describe Template do
   context 'validations' do
+    subject { template.valid? }
+
+    before { subject }
+
     context 'when valid template' do
       let(:template) { Template.new(name: 'Bronze', discount: 0, cashback: 10) }
 
       it 'is valid' do
-        expect(template.valid?).to be true
+        expect(subject).to be true
       end
     end
 
@@ -15,11 +19,10 @@ describe Template do
         let(:template) { Template.new(discount: 0, cashback: 10) }
 
         it 'is invalid' do
-          expect(template.valid?).to be false
+          expect(subject).to be false
         end
 
         it 'returns a message' do
-          template.valid?
           expect(template.errors[:name]).to include('is not present')
         end
       end
@@ -28,11 +31,10 @@ describe Template do
         let(:template) { Template.new(name: 'Silver') }
 
         it 'is invalid' do
-          expect(template.valid?).to be false
+          expect(subject).to be false
         end
 
         it 'returns a messages' do
-          template.valid?
           expect(template.errors[:discount]).to include('is not present')
           expect(template.errors[:cashback]).to include('is not present')
         end
@@ -42,11 +44,10 @@ describe Template do
         let(:template) { Template.new(name: 'Gold', discount: 'ten', cashback: 'five') }
 
         it 'is invalid' do
-          expect(template.valid?).to be false
+          expect(subject).to be false
         end
 
         it 'is invalid with non-integer discount or cashback' do
-          template.valid?
           expect(template.errors[:discount]).to include('is not a number')
           expect(template.errors[:cashback]).to include('is not a number')
         end
