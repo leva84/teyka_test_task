@@ -2,11 +2,15 @@
 
 describe Product do
   context 'validations' do
+    subject { product.valid? }
+
+    before { subject }
+
     context 'when valid product' do
       let(:product) { Product.new(name: 'Test Product') }
 
       it 'is valid' do
-        expect(product.valid?).to be true
+        expect(subject).to be true
       end
     end
 
@@ -14,11 +18,10 @@ describe Product do
       let(:product) { Product.new }
 
       it 'is invalid' do
-        expect(product.valid?).to be false
+        expect(subject).to be false
       end
 
       it 'returns a message' do
-        product.valid?
         expect(product.errors[:name]).to include('is not present')
       end
     end

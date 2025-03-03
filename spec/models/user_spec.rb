@@ -2,12 +2,17 @@
 
 describe User do
   context 'validations' do
+    subject { user.valid? }
+
     let(:template) { Template.create(name: 'Silver', discount: 10, cashback: 5) }
+
+    before { subject }
 
     context 'when valid user' do
       let(:user) { User.new(name: 'Test User', template: template, bonus: 100.0) }
+
       it 'is valid' do
-        expect(user.valid?).to be true
+        expect(subject).to be true
       end
     end
 
@@ -16,11 +21,10 @@ describe User do
         let(:user) { User.new(template: template) }
 
         it 'is invalid' do
-          expect(user.valid?).to be false
+          expect(subject).to be false
         end
 
         it 'returns a message' do
-          user.valid?
           expect(user.errors[:name]).to include('is not present')
         end
       end
@@ -29,11 +33,10 @@ describe User do
         let(:user) { User.new(name: 'Test User') }
 
         it 'is invalid' do
-          expect(user.valid?).to be false
+          expect(subject).to be false
         end
 
         it 'returns a message' do
-          user.valid?
           expect(user.errors[:template_id]).to include('is not present')
         end
       end
@@ -42,11 +45,10 @@ describe User do
         let(:user) { User.new(name: 'Test User', template: template, bonus: 'wrong_value') }
 
         it 'is invalid' do
-          expect(user.valid?).to be false
+          expect(subject).to be false
         end
 
         it 'returns a message' do
-          user.valid?
           expect(user.errors[:bonus]).to include('is not a number')
         end
       end

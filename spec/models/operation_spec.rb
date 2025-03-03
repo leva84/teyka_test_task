@@ -11,6 +11,10 @@ describe Operation do
   end
 
   context 'validations' do
+    subject { operation.valid? }
+
+    before { subject }
+
     context 'when valid operation' do
       let(:operation) do
         Operation.new(
@@ -27,7 +31,7 @@ describe Operation do
       end
 
       it 'is valid with all fields' do
-        expect(operation.valid?).to be true
+        expect(subject).to be true
       end
     end
 
@@ -35,11 +39,10 @@ describe Operation do
       let(:operation) { Operation.new }
 
       it 'is invalid' do
-        expect(operation.valid?).to be false
+        expect(subject).to be false
       end
 
       it 'returns a messages' do
-        operation.valid?
         expect(operation.errors[:user_id]).to include('is not present')
         expect(operation.errors[:cashback]).to include('is not present', 'is not a number')
         expect(operation.errors[:cashback_percent]).to include('is not present', 'is not a number')

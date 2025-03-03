@@ -11,11 +11,19 @@ Layout/SpaceInsideStringInterpolation:
   Enabled: false
 
 # Metrics
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/BlockLength:
   Max: 35
   Exclude:
-    - 'spec/controllers/**/*.rb'
-    - 'spec/models/**/*.rb'
+    - 'spec/**/*.rb'
+
+Metrics/ClassLength:
+  Max: 180
+
+Metrics/MethodLength:
+  Max: 35
 
 # Style
 Style/Documentation:

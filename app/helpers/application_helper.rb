@@ -7,9 +7,9 @@ module ApplicationHelper
 
   def safe_params
     JSON.parse(request.body.read, symbolize_names: true)
-  rescue JSON::ParserError
+  rescue JSON::ParserError => e
     json_response(
-      { error: 'Invalid JSON format in request' },
+      { error: "Invalid JSON format in request: #{ e.message }" },
       400
     )
   end
