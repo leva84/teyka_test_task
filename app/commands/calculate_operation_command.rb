@@ -104,11 +104,11 @@ class CalculateOperationCommand < BaseCommand
 
   def resolve_type_desc(type, value)
     case type
-    when 'discount'
+    when Product::MODIFIERS[:discount]
       I18n.t('resolve_type.discount', value: value)
-    when 'increased_cashback'
+    when Product::MODIFIERS[:increased_cashback]
       I18n.t('resolve_type.increased_cashback', value: value)
-    when 'noloyalty'
+    when Product::MODIFIERS[:noloyalty]
       I18n.t('resolve_type.noloyalty')
     else
       I18n.t('resolve_type.unknown')
@@ -116,15 +116,15 @@ class CalculateOperationCommand < BaseCommand
   end
 
   def calculate_discount(product, total_price)
-    discount_percent = product[:type] == 'discount' ? product[:value].to_f : 0.0
+    discount_percent = product[:type] == Product::MODIFIERS[:discount] ? product[:value].to_f : 0.0
     discount_summ = (total_price * discount_percent / 100).round(2)
     [discount_percent, discount_summ]
   end
 
   def calculate_cashback(product, total_price, discount_value)
-    return 0.0 if product[:type] == 'noloyalty'
+    return 0.0 if product[:type] == Product::MODIFIERS[:noloyalty]
 
-    cashback_percent = if product[:type] == 'increased_cashback'
+    cashback_percent = if product[:type] == Product::MODIFIERS[:increased_cashback]
                          product[:value].to_f
                        else
                          base_cashback_percent
@@ -136,7 +136,7 @@ class CalculateOperationCommand < BaseCommand
 
   def calculate_allow_write_off
     @positions_details
-      .reject { |position| position[:type] == 'noloyalty' }
+      .reject { |position| position[:type] == Product::MODIFIERS[:noloyalty] }
       .sum { |position| position[:price].to_f * position[:quantity].to_i }
   end
 

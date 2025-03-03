@@ -7,7 +7,7 @@ describe Product do
     before { subject }
 
     context 'when valid product' do
-      let(:product) { Product.new(name: 'Test Product') }
+      let(:product) { Product.new(name: 'Test Product', type: Product::MODIFIERS.values.first) }
 
       it 'is valid' do
         expect(subject).to be true
