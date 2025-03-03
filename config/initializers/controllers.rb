@@ -2,6 +2,5 @@
 
 CONTROLLERS = %w[
   ApplicationController
-  DiscountsController
   OperationsController
 ].freeze

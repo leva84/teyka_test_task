@@ -21,7 +21,8 @@ class CalculateOperationCommand < BaseCommand
 
   def validate_user
     @user = User.with_pk(args[:user_id])
-    add_error("User with ID #{args[:user_id]} not found") unless @user
+
+    add_error(:user_not_found, id: args[:user_id]) unless @user
   end
 
   def validate_positions
@@ -35,13 +36,13 @@ class CalculateOperationCommand < BaseCommand
   def validate_positions_presence
     return unless positions.nil? || !positions.is_a?(Array) || positions.empty?
 
-    add_error('Positions are required and should be an array')
+    add_error(:positions_missing)
   end
 
   def validate_positions_content
     positions.each do |pos|
       if pos[:id].nil? || pos[:price].nil? || pos[:quantity].nil?
-        add_error('Each position must have id, price, and quantity')
+        add_error(:invalid_position_format, position: pos)
         break
       end
     end
@@ -50,7 +51,7 @@ class CalculateOperationCommand < BaseCommand
   def validate_positions_format
     positions.each do |pos|
       if pos[:id].negative? || pos[:price].negative? || pos[:quantity].negative?
-        add_error('Each position should have ID, prices and quantity of a lot of zero')
+        add_error(:invalid_position_format, position: pos)
       end
     end
   end
@@ -74,7 +75,7 @@ class CalculateOperationCommand < BaseCommand
         @positions_details << position.merge(
           type: nil,
           value: nil,
-          type_desc: 'Product not found',
+          type_desc: I18n.t('errors.not_found'),
           discount_percent: 0.0,
           discount_summ: 0.0
         )
@@ -104,13 +105,13 @@ class CalculateOperationCommand < BaseCommand
   def resolve_type_desc(type, value)
     case type
     when 'discount'
-      "Additional discount #{ value }%"
+      I18n.t('resolve_type.discount', value: value)
     when 'increased_cashback'
-      "Additional cashback #{ value }%"
+      I18n.t('resolve_type.increased_cashback', value: value)
     when 'noloyalty'
-      'Does not participate in the loyalty system'
+      I18n.t('resolve_type.noloyalty')
     else
-      'Unknown category'
+      I18n.t('resolve_type.unknown')
     end
   end
 
@@ -181,7 +182,7 @@ class CalculateOperationCommand < BaseCommand
     )
     operation.id
   rescue StandardError => e
-    add_error("Error while saving operation: #{ e.message }")
+    add_error(:error_saving_operation, message: e.message)
     code(value: 500)
     nil
   end

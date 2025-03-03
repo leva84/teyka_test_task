@@ -21,26 +21,26 @@ class ConfirmOperationCommand < BaseCommand
 
   def validate_user
     user_data = @args[:user]
-    return add_error('User data is missing') unless user_data
+    return add_error(:user_data_missing) unless user_data
 
     @user = User[user_data[:id]]
 
     unless user
-      add_error("User with ID #{user_data[:id]} not found")
+      add_error(:user_not_found, id: user_data[:id])
       return
     end
 
     return unless (user.bonus.to_f - user_data[:bonus].to_f).abs > 0.0001
 
-    add_error('User bonus in request does not match database')
+    add_error(:user_bonus_mismatch)
   end
 
   # Проверка существования операции
   def fetch_operation
     @operation = Operation[@args[:operation_id]]
-    return add_error("Operation with ID #{ @args[:operation_id] } not found") unless operation
+    return add_error(:operation_not_found, id: @args[:operation_id]) unless operation
 
-    add_error('Operation has already been confirmed') if operation.done
+    add_error(:operation_already_confirmed) if operation.done
   end
 
   # Проверка валидности бонусов для списания
@@ -49,10 +49,16 @@ class ConfirmOperationCommand < BaseCommand
 
     if write_off > operation.allowed_write_off
       add_error(
-        "Write-off exceeds allowed limits. Allowed: #{ operation.allowed_write_off.to_f }, Attempted: #{ write_off }"
+        :write_off_exceeds_limit,
+        allowed: operation.allowed_write_off.to_f,
+        attempted: write_off
       )
     elsif write_off > user.bonus
-      add_error("User does not have enough bonus points. Available: #{ user.bonus.to_f }, Attempted: #{ write_off }")
+      add_error(
+        :insufficient_bonus,
+        available: user.bonus.to_f,
+        attempted: write_off
+      )
     end
   end
 
@@ -73,7 +79,7 @@ class ConfirmOperationCommand < BaseCommand
   def format_response
     @data_summary = {
       status: 200,
-      message: 'Operation confirmed successfully',
+      message: I18n.t('success.operation_confirmed'),
       operation: {
         user_id: user.id,
         cashback: operation.cashback.to_f,

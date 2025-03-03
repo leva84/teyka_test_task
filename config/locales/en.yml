@@ -1,0 +1,23 @@
+en:
+  errors:
+    user_data_missing: 'User data is missing'
+    user_not_found: 'User with ID %{id} not found'
+    user_bonus_mismatch: 'User bonus in the request does not match the database'
+    operation_not_found: 'Operation with ID %{id} not found'
+    operation_already_confirmed: 'Operation is already confirmed'
+    write_off_exceeds_limit: 'Write-off exceeds allowed limit. Allowed: %{allowed}, Attempted: %{attempted}'
+    insufficient_bonus: 'The user does not have enough bonus points. Available: %{available}, Attempted: %{attempted}'
+    positions_missing: 'Positions are missing'
+    positions_empty: 'The positions list is empty'
+    invalid_position_format: 'The position has an invalid format: %{position}'
+    product_not_found: 'Product with ID %{id} not found'
+    loyalty_disabled: 'Loyalty program is disabled for the product with ID %{id}'
+    error_saving_operation: 'Error while saving operation: %{message}'
+    not_found: 'Not found'
+  success:
+    operation_confirmed: 'Operation confirmed successfully'
+  resolve_type:
+    discount: 'Additional discount %{value}%%'
+    increased_cashback: 'Increased cashback %{value}%%'
+    noloyalty: 'Does not participate in the loyalty program'
+    unknown: 'Unknown category'
