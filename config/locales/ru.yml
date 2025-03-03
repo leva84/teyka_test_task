@@ -1,0 +1,17 @@
+ru:
+  errors:
+    user_data_missing: 'Отсутствуют данные пользователя'
+    user_not_found: 'Пользователь с ID %{id} не найден'
+    user_bonus_mismatch: 'Бонусы пользователя в запросе не совпадают с данными в базе'
+    operation_not_found: 'Операция с ID %{id} не найдена'
+    operation_already_confirmed: 'Операция уже подтверждена'
+    write_off_exceeds_limit: 'Снятие превышает допустимые лимиты. Допустимо: %{allowed}, Попытка: %{attempted}'
+    insufficient_bonus: 'У пользователя недостаточно бонусных баллов. Доступно: %{available}, Попытка: %{attempted}'
+    positions_missing: 'Отсутствует список позиций'
+    positions_empty: 'Список позиций пуст'
+    invalid_position_format: 'Позиция имеет неверный формат: %{position}'
+    product_not_found: 'Продукт с ID %{id} не найден'
+    loyalty_disabled: 'Программа лояльности недоступна для продукта с ID %{id}'
+    error_saving_operation: 'Error while saving operation: %{message}'
+  success:
+    operation_confirmed: 'Операция успешно подтверждена'
