@@ -75,7 +75,7 @@ class CalculateOperationCommand < BaseCommand
         @positions_details << position.merge(
           type: nil,
           value: nil,
-          type_desc: 'Product not found',
+          type_desc: I18n.t('errors.not_found'),
           discount_percent: 0.0,
           discount_summ: 0.0
         )
@@ -105,13 +105,13 @@ class CalculateOperationCommand < BaseCommand
   def resolve_type_desc(type, value)
     case type
     when 'discount'
-      "Additional discount #{ value }%"
+      I18n.t('resolve_type.discount', value: value)
     when 'increased_cashback'
-      "Additional cashback #{ value }%"
+      I18n.t('resolve_type.increased_cashback', value: value)
     when 'noloyalty'
-      'Does not participate in the loyalty system'
+      I18n.t('resolve_type.noloyalty')
     else
-      'Unknown category'
+      I18n.t('resolve_type.unknown')
     end
   end
 

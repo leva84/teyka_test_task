@@ -13,5 +13,11 @@ ru:
     product_not_found: 'Продукт с ID %{id} не найден'
     loyalty_disabled: 'Программа лояльности недоступна для продукта с ID %{id}'
     error_saving_operation: 'Error while saving operation: %{message}'
+    not_found: 'Не найден'
   success:
     operation_confirmed: 'Операция успешно подтверждена'
+  resolve_type:
+    discount: 'Дополнительная скидка %{value}%%'
+    increased_cashback: 'Повышенный кэшбэк %{value}%%'
+    noloyalty: 'Не участвует в системе лояльности'
+    unknown: 'Неизвестная категория'

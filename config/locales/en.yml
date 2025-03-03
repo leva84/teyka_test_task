@@ -13,5 +13,11 @@ en:
     product_not_found: 'Product with ID %{id} not found'
     loyalty_disabled: 'Loyalty program is disabled for the product with ID %{id}'
     error_saving_operation: 'Error while saving operation: %{message}'
+    not_found: 'Not found'
   success:
     operation_confirmed: 'Operation confirmed successfully'
+  resolve_type:
+    discount: 'Additional discount %{value}%%'
+    increased_cashback: 'Increased cashback %{value}%%'
+    noloyalty: 'Does not participate in the loyalty program'
+    unknown: 'Unknown category'

@@ -42,17 +42,17 @@ describe OperationsController do
 
         discount_item = response_data[:positions].find { |pos| pos[:id] == product1.id }
         expect(discount_item[:type]).to eq('discount')
-        expect(discount_item[:type_desc]).to eq('Additional discount 10%')
+        expect(discount_item[:type_desc]).to eq I18n.t('resolve_type.discount', value: 10)
 
         # Проверяем описание для кэшбэка
         cashback_item = response_data[:positions].find { |pos| pos[:id] == product2.id }
         expect(cashback_item[:type]).to eq('increased_cashback')
-        expect(cashback_item[:type_desc]).to eq('Additional cashback 7%')
+        expect(cashback_item[:type_desc]).to eq I18n.t('resolve_type.increased_cashback', value: 7)
 
         # Проверяем описание для noloyalty
         noloyalty_item = response_data[:positions].find { |pos| pos[:id] == noloyalty_product.id }
         expect(noloyalty_item[:type]).to eq('noloyalty')
-        expect(noloyalty_item[:type_desc]).to eq('Does not participate in the loyalty system')
+        expect(noloyalty_item[:type_desc]).to eq I18n.t('resolve_type.noloyalty')
       end
     end
 
@@ -117,7 +117,7 @@ describe OperationsController do
         response_data = JSON.parse(last_response.body, symbolize_names: true)
 
         unavailable_product = response_data[:positions].find { |pos| pos[:id] == 999 }
-        expect(unavailable_product[:type_desc]).to eq('Product not found')
+        expect(unavailable_product[:type_desc]).to eq(I18n.t('errors.not_found'))
         expect(unavailable_product[:discount_percent]).to eq(0.0)
         expect(unavailable_product[:discount_summ]).to eq(0.0)
       end
