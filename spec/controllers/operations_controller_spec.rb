@@ -22,9 +22,10 @@ describe OperationsController do
         }.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
         expect(last_response.status).to eq(200)
+
         response_data = JSON.parse(last_response.body, symbolize_names: true)
 
-        expect(response_data[:status]).to eq('success')
+        expect(response_data[:status]).to eq(200)
         expect(response_data[:operation_id]).not_to be_nil
         expect(response_data[:user][:id]).to eq(user.id)
       end

@@ -3,7 +3,7 @@
 class OperationsController < ApplicationController
   post '/operation' do
     params = safe_params
-    command = CalculateDiscountsCommand.call(
+    command = CalculateOperationCommand.call(
       user_id: params[:user_id],
       positions: params[:positions]
     )
