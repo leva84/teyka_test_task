@@ -148,4 +148,136 @@ describe OperationsController do
       end
     end
   end
+
+  describe 'POST /confirm' do
+    let(:operation) do
+      Operation.create(
+        user_id: user.id,
+        cashback: 500.0,
+        cashback_percent: 5.0,
+        discount: 1500.0,
+        discount_percent: 15.0,
+        write_off: 0,
+        check_summ: 10000.0,
+        done: false,
+        allowed_write_off: 5000.0
+      )
+    end
+
+    context 'when the confirmation is valid' do
+      let(:valid_params) do
+        {
+          user: {
+            id: user.id,
+            template_id: user.template_id,
+            name: user.name,
+            bonus: user.bonus.to_f
+          },
+          operation_id: operation.id,
+          write_off: 500
+        }
+      end
+
+      it 'returns a successful response with data' do
+        post '/confirm', valid_params.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(200)
+        response_body = JSON.parse(last_response.body)
+        expect(response_body['message']).to eq('Operation confirmed successfully')
+        expect(response_body['operation']['write_off']).to eq(500.0)
+      end
+    end
+
+    context 'when the user in request is invalid' do
+      let(:invalid_user_params) do
+        {
+          user: {
+            id: 999,
+            template_id: 1,
+            name: 'Неизвестный пользователь',
+            bonus: '5000'
+          },
+          operation_id: operation.id,
+          write_off: 150
+        }
+      end
+
+      it 'returns a 422 status with error message' do
+        post '/confirm', invalid_user_params.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(422)
+        response_body = JSON.parse(last_response.body)
+        expect(response_body['errors']).to include('User with ID 999 not found')
+      end
+    end
+
+    context 'when write-off exceeds allowed limit' do
+      let(:invalid_write_off_params) do
+        {
+          user: {
+            id: user.id,
+            template_id: user.template_id,
+            name: user.name,
+            bonus: user.bonus.to_s
+          },
+          operation_id: operation.id,
+          write_off: 6000.0
+        }
+      end
+
+      it 'returns a 422 status with error message' do
+        post '/confirm', invalid_write_off_params.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(422)
+        response_body = JSON.parse(last_response.body)
+        expect(response_body['errors']).to include('Write-off exceeds allowed limits. Allowed: 5000.0, Attempted: 6000.0')
+      end
+    end
+
+    context 'when operation does not exist' do
+      let(:invalid_operation_params) do
+        {
+          user: {
+            id: user.id,
+            template_id: user.template_id,
+            name: user.name,
+            bonus: user.bonus.to_s
+          },
+          operation_id: 999,
+          write_off: 150
+        }
+      end
+
+      it 'returns a 422 status with error message' do
+        post '/confirm', invalid_operation_params.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(422)
+        response_body = JSON.parse(last_response.body)
+        expect(response_body['errors']).to include('Operation with ID 999 not found')
+      end
+    end
+
+    context 'when user bonus in request does not match database' do
+      let(:invalid_bonus_params) do
+        {
+          user: {
+            id: user.id,
+            template_id: user.template_id,
+            name: user.name,
+            bonus: '5000.0'
+          },
+          operation_id: operation.id,
+          write_off: 150
+        }
+      end
+
+      it 'returns a 422 status with error message' do
+        post '/confirm', invalid_bonus_params.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(422)
+        response_body = JSON.parse(last_response.body)
+        expect(response_body['errors']).to include('User bonus in request does not match database')
+      end
+    end
+  end
 end

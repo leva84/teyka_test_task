@@ -14,4 +14,20 @@ class OperationsController < ApplicationController
       json_response({ errors: command.errors }, command.code)
     end
   end
+
+  post '/confirm' do
+    params = safe_params
+
+    command = ConfirmOperationCommand.call(
+      user: params[:user],
+      operation_id: params[:operation_id],
+      write_off: params[:write_off]
+    )
+
+    if command.ok?
+      json_response(command.data_summary, 200)
+    else
+      json_response({ errors: command.errors }, 422)
+    end
+  end
 end
