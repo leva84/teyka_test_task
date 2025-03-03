@@ -25,7 +25,10 @@ class CalculateOperationCommand < BaseCommand
   end
 
   def validate_positions
-    add_error('Positions are required and should be an array') if positions.nil? || !positions.is_a?(Array) || positions.empty?
+    if positions.nil? || !positions.is_a?(Array) || positions.empty?
+      add_error('Positions are required and should be an array')
+      return
+    end
 
     positions.each do |pos|
       if pos[:id].nil? || pos[:price].nil? || pos[:quantity].nil?
@@ -69,7 +72,7 @@ class CalculateOperationCommand < BaseCommand
       # Расчеты по продукту для позиции
       total_price = position[:price].to_f * position[:quantity].to_i
       discount_percent, discount_summ = calculate_discount(product, total_price)
-      cashback_percent, cashback_summ = calculate_cashback(product, total_price, discount_summ)
+      cashback_summ = calculate_cashback(product, total_price, discount_summ)
 
       @total_discount += discount_summ
       @total_cashback += cashback_summ
@@ -97,8 +100,7 @@ class CalculateOperationCommand < BaseCommand
 
     cashback_percent = product[:type] == 'increased_cashback' ? product[:value].to_f : base_cashback_percent
     final_price = total_price - discount_summ
-    cashback_summ = (final_price * cashback_percent / 100).round(2)
-    [cashback_percent, cashback_summ]
+    (final_price * cashback_percent / 100).round(2)
   end
 
   def calculate_allow_write_off
