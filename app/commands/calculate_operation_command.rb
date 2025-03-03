@@ -95,11 +95,16 @@ class CalculateOperationCommand < BaseCommand
     [discount_percent, discount_summ]
   end
 
-  def calculate_cashback(product, total_price, discount_summ)
-    return [0.0, 0.0] if product[:type] == 'noloyalty'
+  def calculate_cashback(product, total_price, discount_value)
+    return 0.0 if product[:type] == 'noloyalty'
 
-    cashback_percent = product[:type] == 'increased_cashback' ? product[:value].to_f : base_cashback_percent
-    final_price = total_price - discount_summ
+    cashback_percent = if product[:type] == 'increased_cashback'
+                         product[:value].to_f
+                       else
+                         base_cashback_percent
+                       end
+
+    final_price = total_price - discount_value
     (final_price * cashback_percent / 100).round(2)
   end
 
