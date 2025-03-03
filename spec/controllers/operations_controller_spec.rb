@@ -10,7 +10,8 @@ describe OperationsController do
   let(:valid_positions) do
     [
       { id: product1.id, price: 100, quantity: 2 },
-      { id: product2.id, price: 50, quantity: 1 }
+      { id: product2.id, price: 50, quantity: 1 },
+      { id: noloyalty_product.id, price: 50, quantity: 1 }
     ]
   end
 
@@ -38,6 +39,20 @@ describe OperationsController do
         expect(response_data[:user][:id]).to eq(user.id)
         expect(response_data[:discount][:summ]).to be > 0 # Проверяем, что скидка рассчитана
         expect(response_data[:cashback][:will_add]).to be > 0 # Проверяем, что кэшбэк начислен
+
+        discount_item = response_data[:positions].find { |pos| pos[:id] == product1.id }
+        expect(discount_item[:type]).to eq('discount')
+        expect(discount_item[:type_desc]).to eq('Дополнительная скидка 10%')
+
+        # Проверяем описание для кэшбэка
+        cashback_item = response_data[:positions].find { |pos| pos[:id] == product2.id }
+        expect(cashback_item[:type]).to eq('increased_cashback')
+        expect(cashback_item[:type_desc]).to eq('Дополнительный кэшбек 7%')
+
+        # Проверяем описание для noloyalty
+        noloyalty_item = response_data[:positions].find { |pos| pos[:id] == noloyalty_product.id }
+        expect(noloyalty_item[:type]).to eq('noloyalty')
+        expect(noloyalty_item[:type_desc]).to eq('Не участвует в системе лояльности')
       end
     end
 

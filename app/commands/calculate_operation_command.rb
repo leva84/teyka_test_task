@@ -82,10 +82,23 @@ class CalculateOperationCommand < BaseCommand
       @positions_details << position.merge(
         type: product[:type],
         value: product[:value],
-        type_desc: product[:description],
+        type_desc: resolve_type_desc(product[:type], product[:value]),
         discount_percent: discount_percent,
         discount_summ: discount_summ
       )
+    end
+  end
+
+  def resolve_type_desc(type, value)
+    case type
+    when 'discount'
+      "Дополнительная скидка #{ value }%"
+    when 'increased_cashback'
+      "Дополнительный кэшбек #{ value }%"
+    when 'noloyalty'
+      'Не участвует в системе лояльности'
+    else
+      nil
     end
   end
 
