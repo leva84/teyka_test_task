@@ -35,8 +35,8 @@ class BaseCommand
     @code ||= value || (ok? ? 200 : 422)
   end
 
-  def add_error(message)
-    @errors << message
+  def add_error(key, vars = {})
+    @errors << I18n.t("errors.#{ key }", **vars)
   end
 
   private

@@ -76,16 +76,17 @@ describe OperationsController do
     end
 
     context 'when the user is not found' do
+      let(:id) { -1 }
       it 'returns a 422 status with an error message' do
         post '/operation', {
-          user_id: -1,
+          user_id: id,
           positions: valid_positions
         }.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
         expect(last_response.status).to eq(422)
 
         response_data = JSON.parse(last_response.body, symbolize_names: true)
-        expect(response_data[:errors]).to include('User with ID -1 not found')
+        expect(response_data[:errors]).to include(I18n.t('errors.user_not_found', id: id))
       end
     end
 
@@ -98,7 +99,7 @@ describe OperationsController do
         expect(last_response.status).to eq(422)
 
         response_data = JSON.parse(last_response.body, symbolize_names: true)
-        expect(response_data[:errors]).to include('Positions are required and should be an array')
+        expect(response_data[:errors]).to include(I18n.t('errors.positions_missing'))
       end
     end
 
@@ -144,7 +145,7 @@ describe OperationsController do
 
         response_data = JSON.parse(last_response.body, symbolize_names: true)
 
-        expect(response_data[:errors]).to include('Positions are required and should be an array')
+        expect(response_data[:errors]).to include(I18n.t('errors.positions_missing'))
       end
     end
   end
@@ -183,16 +184,17 @@ describe OperationsController do
 
         expect(last_response.status).to eq(200)
         response_body = JSON.parse(last_response.body)
-        expect(response_body['message']).to eq('Operation confirmed successfully')
+        expect(response_body['message']).to eq(I18n.t('success.operation_confirmed'))
         expect(response_body['operation']['write_off']).to eq(500.0)
       end
     end
 
     context 'when the user in request is invalid' do
+      let(:user_id) { 999 }
       let(:invalid_user_params) do
         {
           user: {
-            id: 999,
+            id: user_id,
             template_id: 1,
             name: 'Неизвестный пользователь',
             bonus: '5000'
@@ -207,21 +209,22 @@ describe OperationsController do
 
         expect(last_response.status).to eq(422)
         response_body = JSON.parse(last_response.body)
-        expect(response_body['errors']).to include('User with ID 999 not found')
+        expect(response_body['errors']).to include(I18n.t('errors.user_not_found', id: user_id))
       end
     end
 
     context 'when write-off exceeds allowed limit' do
+      let(:write_off) { 6000.0 }
       let(:invalid_write_off_params) do
         {
           user: {
             id: user.id,
             template_id: user.template_id,
             name: user.name,
-            bonus: user.bonus.to_s
+            bonus: user.bonus.to_f
           },
           operation_id: operation.id,
-          write_off: 6000.0
+          write_off: write_off
         }
       end
 
@@ -231,11 +234,12 @@ describe OperationsController do
         expect(last_response.status).to eq(422)
         response_body = JSON.parse(last_response.body)
         expect(response_body['errors'])
-          .to include('Write-off exceeds allowed limits. Allowed: 5000.0, Attempted: 6000.0')
+          .to include(I18n.t('errors.write_off_exceeds_limit', allowed: 5000.0, attempted: write_off))
       end
     end
 
     context 'when operation does not exist' do
+      let(:operation_id) { 999 }
       let(:invalid_operation_params) do
         {
           user: {
@@ -244,7 +248,7 @@ describe OperationsController do
             name: user.name,
             bonus: user.bonus.to_s
           },
-          operation_id: 999,
+          operation_id: operation_id,
           write_off: 150
         }
       end
@@ -254,7 +258,7 @@ describe OperationsController do
 
         expect(last_response.status).to eq(422)
         response_body = JSON.parse(last_response.body)
-        expect(response_body['errors']).to include('Operation with ID 999 not found')
+        expect(response_body['errors']).to include(I18n.t('errors.operation_not_found', id: operation_id))
       end
     end
 
@@ -277,7 +281,7 @@ describe OperationsController do
 
         expect(last_response.status).to eq(422)
         response_body = JSON.parse(last_response.body)
-        expect(response_body['errors']).to include('User bonus in request does not match database')
+        expect(response_body['errors']).to include(I18n.t('errors.user_bonus_mismatch'))
       end
     end
   end
