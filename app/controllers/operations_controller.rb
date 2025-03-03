@@ -17,7 +17,6 @@ class OperationsController < ApplicationController
 
   post '/confirm' do
     params = safe_params
-
     command = ConfirmOperationCommand.call(
       user: params[:user],
       operation_id: params[:operation_id],
@@ -25,9 +24,9 @@ class OperationsController < ApplicationController
     )
 
     if command.ok?
-      json_response(command.data_summary, 200)
+      json_response(command.data_summary, command.code)
     else
-      json_response({ errors: command.errors }, 422)
+      json_response({ errors: command.errors }, command.code)
     end
   end
 end

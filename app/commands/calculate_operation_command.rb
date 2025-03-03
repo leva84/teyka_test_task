@@ -104,13 +104,13 @@ class CalculateOperationCommand < BaseCommand
   def resolve_type_desc(type, value)
     case type
     when 'discount'
-      "Дополнительная скидка #{ value }%"
+      "Additional discount #{ value }%"
     when 'increased_cashback'
-      "Дополнительный кэшбек #{ value }%"
+      "Additional cashback #{ value }%"
     when 'noloyalty'
-      'Не участвует в системе лояльности'
+      'Does not participate in the loyalty system'
     else
-      'Неизвестная категория'
+      'Unknown category'
     end
   end
 

@@ -42,17 +42,17 @@ describe OperationsController do
 
         discount_item = response_data[:positions].find { |pos| pos[:id] == product1.id }
         expect(discount_item[:type]).to eq('discount')
-        expect(discount_item[:type_desc]).to eq('Дополнительная скидка 10%')
+        expect(discount_item[:type_desc]).to eq('Additional discount 10%')
 
         # Проверяем описание для кэшбэка
         cashback_item = response_data[:positions].find { |pos| pos[:id] == product2.id }
         expect(cashback_item[:type]).to eq('increased_cashback')
-        expect(cashback_item[:type_desc]).to eq('Дополнительный кэшбек 7%')
+        expect(cashback_item[:type_desc]).to eq('Additional cashback 7%')
 
         # Проверяем описание для noloyalty
         noloyalty_item = response_data[:positions].find { |pos| pos[:id] == noloyalty_product.id }
         expect(noloyalty_item[:type]).to eq('noloyalty')
-        expect(noloyalty_item[:type_desc]).to eq('Не участвует в системе лояльности')
+        expect(noloyalty_item[:type_desc]).to eq('Does not participate in the loyalty system')
       end
     end
 
@@ -158,7 +158,7 @@ describe OperationsController do
         discount: 1500.0,
         discount_percent: 15.0,
         write_off: 0,
-        check_summ: 10000.0,
+        check_summ: 10_000.0,
         done: false,
         allowed_write_off: 5000.0
       )
@@ -230,7 +230,8 @@ describe OperationsController do
 
         expect(last_response.status).to eq(422)
         response_body = JSON.parse(last_response.body)
-        expect(response_body['errors']).to include('Write-off exceeds allowed limits. Allowed: 5000.0, Attempted: 6000.0')
+        expect(response_body['errors'])
+          .to include('Write-off exceeds allowed limits. Allowed: 5000.0, Attempted: 6000.0')
       end
     end
 

@@ -19,7 +19,6 @@ class ConfirmOperationCommand < BaseCommand
 
   attr_reader :user, :operation
 
-  # Проверка существования пользователя
   def validate_user
     user_data = @args[:user]
     return add_error('User data is missing') unless user_data
@@ -31,9 +30,9 @@ class ConfirmOperationCommand < BaseCommand
       return
     end
 
-    if user.bonus.to_f != user_data[:bonus].to_f
-      add_error('User bonus in request does not match database')
-    end
+    return unless (user.bonus.to_f - user_data[:bonus].to_f).abs > 0.0001
+
+    add_error('User bonus in request does not match database')
   end
 
   # Проверка существования операции
