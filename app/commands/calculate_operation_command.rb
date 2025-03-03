@@ -25,20 +25,32 @@ class CalculateOperationCommand < BaseCommand
   end
 
   def validate_positions
-    if positions.nil? || !positions.is_a?(Array) || positions.empty?
-      add_error('Positions are required and should be an array')
-      return
-    end
+    validate_positions_presence
+    return if error?
 
+    validate_positions_format
+    validate_positions_content
+  end
+
+  def validate_positions_presence
+    return unless positions.nil? || !positions.is_a?(Array) || positions.empty?
+
+    add_error('Positions are required and should be an array')
+  end
+
+  def validate_positions_content
     positions.each do |pos|
       if pos[:id].nil? || pos[:price].nil? || pos[:quantity].nil?
         add_error('Each position must have id, price, and quantity')
         break
       end
+    end
+  end
 
+  def validate_positions_format
+    positions.each do |pos|
       if pos[:id].negative? || pos[:price].negative? || pos[:quantity].negative?
         add_error('Each position should have ID, prices and quantity of a lot of zero')
-        break
       end
     end
   end
@@ -98,7 +110,7 @@ class CalculateOperationCommand < BaseCommand
     when 'noloyalty'
       'Не участвует в системе лояльности'
     else
-      nil
+      'Неизвестная категория'
     end
   end
 
@@ -183,7 +195,7 @@ class CalculateOperationCommand < BaseCommand
     when 1 then 5.0  # Bronze
     when 2 then 3.0  # Silver
     when 3 then 0.0  # Gold
-    else 0.0
+    else 0
     end
   end
 end

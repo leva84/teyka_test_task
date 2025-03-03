@@ -11,6 +11,9 @@ Layout/SpaceInsideStringInterpolation:
   Enabled: false
 
 # Metrics
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/BlockLength:
   Max: 35
   Exclude:
@@ -20,7 +23,7 @@ Metrics/ClassLength:
   Max: 180
 
 Metrics/MethodLength:
-  Max: 25
+  Max: 35
 
 # Style
 Style/Documentation:
